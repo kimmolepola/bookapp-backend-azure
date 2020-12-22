@@ -1,14 +1,14 @@
 require('dotenv').config();
 const {
-  ApolloServer, UserInputError, AuthenticationError, gql, PubSub,
+  ApolloServer, UserInputError, AuthenticationError, gql,
 } = require('apollo-server-azure-functions');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
-const User = require('./models/User');
-const Author = require('./models/Author');
-const Book = require('./models/Book');
+const User = require('../models/User');
+const Author = require('../models/Author');
+const Book = require('../models/Book');
 
-const pubsub = new PubSub();
+// const pubsub = new PubSub();
 const { JWT_SECRET } = process.env;
 
 mongoose.set('useFindAndModify', false);
@@ -138,16 +138,18 @@ const resolvers = {
       }
       authorObj.bookCount += 1;
       authorObj.save();
-      pubsub.publish('BOOK_ADDED', { bookAdded: book });
+      // pubsub.publish('BOOK_ADDED', { bookAdded: book });
       return book;
     },
   },
 
+  /*
   Subscription: {
     bookAdded: {
       subscribe: () => pubsub.asyncIterator(['BOOK_ADDED']),
     },
   },
+  */
 
   /*   Author: {
       name: (root) => root.name,
@@ -165,7 +167,14 @@ const resolvers = {
       return acc;
     }, [])),
     me: (root, args, context) => context.currentUser,
-    allAuthors: () => Author.find({}),
+    allAuthors: () => {
+      const asdf = Author.find({});
+      const qwer = async () => {
+        console.log('asdf---------------', await asdf);
+      };
+      qwer();
+      return asdf;
+    },
     allBooks: (root, args) => (args.genre === ''
       ? Book.find({}).populate('author')
       : Book.find({ genres: { $in: [args.genre] } }).populate('author')),
@@ -188,11 +197,18 @@ const server = new ApolloServer({
     }
   },
 });
-console.log('LISTEN------');
-console.log('port------>', process.env.PORT, '<-----');
+/*
 server.listen({ port: process.env.PORT || 4000 }).then(({ url, subscriptionsUrl }) => {
   console.log(`Server ready at ${url}`);
   console.log(`Subscriptions ready at ${subscriptionsUrl}`);
+});
+*/
+
+exports.graphqlHandler = server.createHandler({
+  cors: {
+    origin: '*',
+    credentials: true,
+  },
 });
 
 /*

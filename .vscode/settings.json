@@ -1,4 +1,8 @@
 {
-    "appService.defaultWebAppToDeploy": "/subscriptions/75733a9a-e080-487b-9913-9e99558301a8/resourceGroups/worksamples-rg/providers/Microsoft.Web/sites/kimmolepola-bookapp-backend",
-    "appService.deploySubpath": "."
+    "azureFunctions.deploySubpath": ".",
+    "azureFunctions.postDeployTask": "npm install",
+    "azureFunctions.projectLanguage": "JavaScript",
+    "azureFunctions.projectRuntime": "~3",
+    "debug.internalConsoleOptions": "neverOpen",
+    "azureFunctions.preDeployTask": "npm prune"
 }
